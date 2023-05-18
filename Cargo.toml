@@ -1,0 +1,21 @@
+[package]
+name = "chen-api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.3.1"
+config = "0.11.0"
+dotenvy = "0.15.7"
+log = "0.4.0"
+env_logger = "0.10.0"
+chrono = { version = "0.4.24", features = ["serde"] }
+color-eyre = "0.6.2"
+serde = { version = "1.0.163", features = ["derive"] }
+validator = "0.16.0"
+validator_derive = "0.16.0"
+sqlx = {version = "0.7.0-alpha.3", default-features = false, features = [ "runtime-tokio", "macros", "postgres", "uuid", "chrono"] }
+deadpool-postgres = { version = "0.9.0", features = ["serde"] }
+tokio-postgres = "0.7.8"
