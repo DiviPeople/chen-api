@@ -1,8 +1,6 @@
 use color_eyre::Result;
-use deadpool_postgres::Pool;
 use dotenvy::dotenv;
 use serde::Deserialize;
-use tokio_postgres::NoTls;
 
 pub use config::ConfigError;
 
@@ -29,9 +27,5 @@ impl Config {
 
     fn load_dotenv() {
         dotenv().ok();
-    }
-
-    pub fn configure_pool(&self) -> Pool {
-        self.pg.create_pool(NoTls).unwrap()
     }
 }
