@@ -2,3 +2,5 @@
 .idea
 *.swp
 .env*
+/migration/target
+/migration/README.md

@@ -1,14 +1,12 @@
-#[macro_use]
-extern crate validator_derive;
-
 mod config;
 mod handlers;
 mod models;
-mod user;
+mod entity;
 
-use actix_web::{App, HttpServer, middleware::Logger};
+use actix_web::{App, HttpServer, middleware::Logger, web::Data};
 use env_logger::Env;
 use std::io;
+use sea_orm::Database;
 use crate::config::Config;
 use crate::models::AppState;
 
@@ -18,15 +16,19 @@ async fn main() -> io::Result<()> {
 
     let config = Config::from_env().unwrap();
 
-    let pool = config.configure_pool();
+    let db_url = format!(
+        "postgres://{}:{}@{}:{}/{}",
+        config.db_user, config.db_password, config.db_host, config.db_port, config.db_name
+    );
+    let server_addr = format!("{}:{}", config.server_host, config.server_port);
 
-    let server_addr = format!("{}:{}", config.server.host, config.server.port);
+    let conn = Database::connect(&db_url).await.unwrap();
 
     HttpServer::new(move || {
         App::new()
-            .app_data(AppState {
-                pool: pool.clone(),
-            })
+            .app_data(Data::new(AppState {
+                conn: conn.clone(),
+            }))
             .configure(handlers::config)
             .wrap(Logger::default())
     })
