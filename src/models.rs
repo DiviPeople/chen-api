@@ -1,9 +1,9 @@
 use serde::Serialize;
-use deadpool_postgres::Pool;
+use sea_orm::DatabaseConnection;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub pool: Pool,
+    pub conn: DatabaseConnection,
 }
 
 #[derive(Serialize)]
