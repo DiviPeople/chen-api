@@ -20,8 +20,6 @@ async fn main() -> io::Result<()> {
     let conn = Database::connect(&db_url).await.unwrap();
     Migrator::up(&conn, None).await.unwrap();
 
-    let server_addr = format!("{}:{}", config.server.host, config.server.port);
-
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(AppState {
@@ -30,7 +28,7 @@ async fn main() -> io::Result<()> {
             .configure(handlers::config)
             .wrap(Logger::default())
     })
-        .bind(server_addr)?
+        .bind(format!("{}:{}", config.server.host, config.server.port))?
         .run()
         .await
 }
