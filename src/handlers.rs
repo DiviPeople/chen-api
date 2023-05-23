@@ -1,7 +1,11 @@
-use actix_web::{get, post, web, Responder, HttpResponse};
-use sea_orm::EntityTrait;
-use crate::entity::prelude::Users;
-use crate::models::{AppState, Status};
+use actix_web::{get, put, post, delete, web, Responder, HttpResponse};
+use sea_orm::{ActiveModelTrait, EntityTrait, IntoActiveModel, DatabaseConnection, Set};
+use crate::{
+    models::Status, AppState, entity::{
+        users, users::{ActiveModel, Model}, 
+        prelude::Users
+    }, 
+};
 
 #[get("/")]
 pub async fn status() -> impl Responder {
@@ -9,22 +13,86 @@ pub async fn status() -> impl Responder {
         .json(Status {status: "UP".to_string()})
 }
 
-#[get("/entries")]
-async fn get_entries(data: web::Data<AppState>) -> impl Responder {
-    let conn = &data.conn;
-
+#[get("/users")]
+async fn get_users(data: web::Data<AppState>) -> impl Responder {
+    let conn: &DatabaseConnection = &data.conn;
     let users: Vec<serde_json::Value> = Users::find().into_json().all(conn).await.unwrap();
 
     HttpResponse::Ok().json(users)
 }
 
-#[post("/create-new-User")]
-pub async fn create_new_user() -> impl Responder {
-    format!("hello from create_new_user")
+#[get("/users/{id}")]
+async fn get_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Responder {
+    let conn: &DatabaseConnection = &data.conn;
+    let id: i32 = path.into_inner();
+    let user: Option<serde_json::Value> = Users::find_by_id(id).into_json().one(conn).await.unwrap();
+
+    HttpResponse::Ok().json(user)
+}
+
+#[post("/users")]
+async fn create_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
+    let conn: &DatabaseConnection = &data.conn;
+    let user: ActiveModel = ActiveModel {
+        full_name: Set(obj.full_name.to_owned()),
+        email: Set(obj.email.to_owned()),
+        password_hash: Set(obj.password_hash.to_owned()),
+        salt: Set(obj.salt.to_owned()),
+        is_superuser: Set(obj.is_superuser.to_owned()),
+        is_staff: Set(obj.is_staff.to_owned()),
+        img_url: Set(obj.img_url.to_owned()),
+        created_at: Set(obj.created_at.to_owned()),
+        updated_at: Set(obj.updated_at.to_owned()),
+        json_string: Set(obj.json_string.to_owned()),
+        ..Default::default()
+    };
+    user.insert(conn).await.unwrap();
+
+    HttpResponse::Ok()
+}
+
+#[put("/users/{id}")]
+async fn update_user(data: web::Data<AppState>, path: web::Path<i32>, obj: web::Json<Model>) -> impl Responder {
+    let conn: &DatabaseConnection = &data.conn;
+    let id: i32 = path.into_inner();
+    let user: Option<Model> = Users::find_by_id(id).one(conn).await.unwrap();
+    let mut user: ActiveModel = user.unwrap().into();
+
+    user.full_name = Set(obj.full_name.to_owned());
+    user.email = Set(obj.email.to_owned());
+    user.password_hash = Set(obj.password_hash.to_owned());
+    user.salt = Set(obj.salt.to_owned());
+    user.is_superuser = Set(obj.is_superuser.to_owned());
+    user.is_staff = Set(obj.is_staff.to_owned());
+    user.img_url = Set(obj.img_url.to_owned());
+    user.created_at = Set(obj.created_at.to_owned());
+    user.updated_at = Set(obj.updated_at.to_owned());
+    user.json_string = Set(obj.json_string.to_owned());
+
+    user.update(conn).await.unwrap();
+
+    HttpResponse::Ok()
+}
+
+#[delete("/users/{id}")]
+async fn delete_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Responder {
+    let conn: &DatabaseConnection = &data.conn;
+    let id: i32 = path.into_inner();
+    let user: Option<Model> = Users::find_by_id(id).one(conn).await.unwrap();
+    let user: Model = user.unwrap();
+    users::Entity::delete(user.into_active_model())
+        .exec(conn)
+        .await  
+        .unwrap();
+
+    HttpResponse::Ok()
 }
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(status)
-        .service(create_new_user)
-        .service(get_entries);
+        .service(get_users)
+        .service(get_user)
+        .service(create_user)
+        .service(update_user)
+        .service(delete_user);  
 }
