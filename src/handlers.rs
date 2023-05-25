@@ -1,5 +1,5 @@
 use actix_web::{get, put, post, delete, web, Responder, HttpResponse};
-use sea_orm::{ActiveModelTrait, EntityTrait, IntoActiveModel, DatabaseConnection, Set};
+use sea_orm::{ActiveModelTrait, EntityTrait, IntoActiveModel, DatabaseConnection, QuerySelect, Set};
 use crate::{
     models::Status, AppState, entity::{
         users, users::{ActiveModel, Model}, 
@@ -16,7 +16,15 @@ pub async fn status() -> impl Responder {
 #[get("/users")]
 async fn get_users(data: web::Data<AppState>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
-    let users: Vec<serde_json::Value> = Users::find().into_json().all(conn).await.unwrap();
+    let users: Vec<serde_json::Value> = Users::find().select_only().columns([ 
+        users::Column::FullName, 
+        users::Column::Email, 
+        users::Column::IsStaff,
+    ])
+    .into_json()
+    .all(conn)
+    .await
+    .unwrap();   
 
     HttpResponse::Ok().json(users)
 }
