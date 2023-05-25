@@ -1,5 +1,10 @@
 use dotenvy::dotenv;
 use std::env;
+use sea_orm::DatabaseConnection;
+
+pub struct AppState {
+    pub conn: DatabaseConnection,
+}
 
 pub struct Config {
     pub server_host: String,
