@@ -6,6 +6,7 @@ use crate::{
         users::{ActiveModel, Model},
     },
     serializers::Status,
+    encryption::encrypt,
 };
 use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
 use sea_orm::{
@@ -50,11 +51,14 @@ async fn get_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Respo
 #[post("/users")]
 async fn create_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
+
+    let (hash_sum, salt) = encrypt(obj.password_hash.to_owned());
+
     let user: ActiveModel = ActiveModel {
         full_name: Set(obj.full_name.to_owned()),
         email: Set(obj.email.to_owned()),
-        password_hash: Set(obj.password_hash.to_owned()),
-        salt: Set(obj.salt.to_owned()),
+        password_hash: Set(hash_sum),
+        salt: Set(Some(salt)),
         is_superuser: Set(obj.is_superuser.to_owned()),
         is_staff: Set(obj.is_staff.to_owned()),
         img_url: Set(obj.img_url.to_owned()),
