@@ -1,11 +1,13 @@
 use actix_web::{get, put, post, delete, web, Responder, HttpResponse};
 use sea_orm::{ActiveModelTrait, EntityTrait, IntoActiveModel, DatabaseConnection, QuerySelect, Set};
 use crate::{
-    models::Status, AppState, entity::{
-        users, users::{ActiveModel, Model}, 
-        prelude::Users
-    }, 
+    entity::{
+        prelude::Users, users,
+        users::{ActiveModel, Model}
+    },
+    serializers::Status,
 };
+use crate::config::AppState;
 
 #[get("/")]
 pub async fn status() -> impl Responder {
@@ -24,7 +26,7 @@ async fn get_users(data: web::Data<AppState>) -> impl Responder {
     .into_json()
     .all(conn)
     .await
-    .unwrap();   
+    .unwrap();
 
     HttpResponse::Ok().json(users)
 }
