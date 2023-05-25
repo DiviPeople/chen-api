@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Users::ImgUrl).string())
                     .col(ColumnDef::new(Users::CreatedAt).timestamp())
                     .col(ColumnDef::new(Users::UpdatedAt).timestamp())
-                    .col(ColumnDef::new(Users::JsonString).json())
+                    .col(ColumnDef::new(Users::Integrations).json())
                     .to_owned(),
             )
             .await
@@ -53,5 +53,5 @@ enum Users {
     ImgUrl,
     CreatedAt,
     UpdatedAt,
-    JsonString,
+    Integrations,
 }

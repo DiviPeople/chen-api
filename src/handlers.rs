@@ -43,7 +43,7 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl R
         img_url: Set(obj.img_url.to_owned()),
         created_at: Set(obj.created_at.to_owned()),
         updated_at: Set(obj.updated_at.to_owned()),
-        json_string: Set(obj.json_string.to_owned()),
+        integrations: Set(obj.integrations.to_owned()),
         ..Default::default()
     };
     user.insert(conn).await.unwrap();
@@ -67,7 +67,7 @@ async fn update_user(data: web::Data<AppState>, path: web::Path<i32>, obj: web::
     user.img_url = Set(obj.img_url.to_owned());
     user.created_at = Set(obj.created_at.to_owned());
     user.updated_at = Set(obj.updated_at.to_owned());
-    user.json_string = Set(obj.json_string.to_owned());
+    user.integrations = Set(obj.integrations.to_owned());
 
     user.update(conn).await.unwrap();
 
