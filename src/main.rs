@@ -2,7 +2,6 @@ mod config;
 mod handlers;
 mod entity;
 mod serializers;
-mod models;
 
 use actix_web::{App, HttpServer, middleware::Logger, web::Data};
 use env_logger::Env;
