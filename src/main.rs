@@ -14,7 +14,7 @@ use crate::models::AppState;
 async fn main() -> io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-    let config = Config::from_env().unwrap();
+    let config = Config::from_env();
 
     let db_url = format!(
         "postgres://{}:{}@{}:{}/{}",
