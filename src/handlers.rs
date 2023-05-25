@@ -5,9 +5,9 @@ use crate::{
         prelude::Users, users,
         users::{ActiveModel, Model}
     },
+    config::AppState,
     serializers::Status,
 };
-use crate::config::AppState;
 
 #[get("/")]
 pub async fn status() -> impl Responder {
