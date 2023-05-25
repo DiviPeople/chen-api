@@ -1,14 +1,15 @@
 mod config;
 mod handlers;
-mod models;
 mod entity;
+mod serializers;
+mod models;
 
 use actix_web::{App, HttpServer, middleware::Logger, web::Data};
 use env_logger::Env;
 use std::io;
 use sea_orm::Database;
 use crate::config::Config;
-use crate::models::AppState;
+use self::config::AppState;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
