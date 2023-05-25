@@ -1,5 +1,5 @@
 use sea_orm::entity::prelude::*;
-use serde::Deserialize;
+use serde::Deserialize; 
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Deserialize)]
 #[sea_orm(table_name = "users")]
@@ -8,7 +8,7 @@ pub struct Model {
     pub id: i32,
     pub full_name: String,
     pub email: String,
-    pub password_hash: Option<String>,
+    pub password_hash: String,
     pub salt: Option<String>,
     pub is_superuser: bool,
     pub is_staff: bool,

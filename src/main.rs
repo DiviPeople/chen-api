@@ -2,6 +2,7 @@ mod config;
 mod entity;
 mod handlers;
 mod serializers;
+mod encryption;
 
 use self::config::AppState;
 use crate::config::Config;
