@@ -20,6 +20,18 @@ pub struct Model {
     pub integrations: Option<Json>,
 }
 
+#[derive(Deserialize)]
+pub struct User {
+    pub full_name: String,
+    pub email: String,
+    pub is_superuser: bool,
+    pub is_staff: bool,
+    pub img_url: Option<String>,
+    pub created_at: Option<DateTime>,
+    pub updated_at: Option<DateTime>,
+    pub integrations: Option<Json>,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
