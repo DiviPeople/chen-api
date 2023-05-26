@@ -531,7 +531,6 @@ dependencies = [
  "env_logger",
  "log",
  "rand",
- "rand_core",
  "rust-argon2",
  "sea-orm",
  "serde",
