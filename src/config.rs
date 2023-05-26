@@ -1,6 +1,7 @@
 use color_eyre::Result;
 use dotenvy::dotenv;
 use serde::Deserialize;
+use argon2::{self, Config, ThreadMode, Variant, Version};
 
 pub use config::ConfigError;
 
@@ -25,3 +26,14 @@ impl AppConfig{
     }
 }
 
+pub const ARGON2_CONFIG: argon2::Config<'_> = Config {
+    variant: Variant::Argon2id,
+    version: Version::Version13,
+    mem_cost: 1024,
+    time_cost: 10,
+    lanes: 4,
+    thread_mode: ThreadMode::Parallel,
+    secret: &[],
+    ad: &[],
+    hash_length: 32,
+};

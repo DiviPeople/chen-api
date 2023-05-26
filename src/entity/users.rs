@@ -1,19 +1,7 @@
-use argon2::{ThreadMode, Variant, Config, Version};
 use sea_orm::{entity::prelude::*, Set};
 use serde::{Deserialize};
 use rand::distributions::{Alphanumeric, DistString};
-
-pub const ARGON2_CONFIG: argon2::Config<'_> = Config {
-    variant: Variant::Argon2id,
-    version: Version::Version13,
-    mem_cost: 1024,
-    time_cost: 10,
-    lanes: 4,
-    thread_mode: ThreadMode::Parallel,
-    secret: &[],
-    ad: &[],
-    hash_length: 32,
-};
+use crate::config::ARGON2_CONFIG; 
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Deserialize)]
 #[sea_orm(table_name = "users")]
