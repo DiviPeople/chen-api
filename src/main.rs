@@ -4,7 +4,7 @@ mod handlers;
 mod serializers;
 
 use self::config::AppState;
-use crate::config::Config;
+use crate::config::AppConfig;
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 use env_logger::Env;
 use sea_orm::Database;
@@ -14,7 +14,7 @@ use std::io;
 async fn main() -> io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-    let config = Config::from_env();
+    let config = AppConfig::from_env();
 
     let db_url = format!(
         "postgres://{}:{}@{}:{}/{}",
