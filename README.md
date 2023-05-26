@@ -3,8 +3,15 @@
 ## Установка зависимостей
 
 Chen-api требует
+
 * rust 1.69.0 и выше. Инструкция по установке [здесь](https://www.rust-lang.org/tools/install)
 * Docker, инструкцию по установке которого можно найти [здесь](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-engine---community-1).
+
+Скачиваем утилиту для миграций
+
+```bash
+$ cargo install sea-orm-cli
+```
 
 ## Подготовка к запуску и запуск
 
