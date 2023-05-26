@@ -2,8 +2,7 @@ use crate::{
     config::AppState,
     entity::{
         prelude::Users,
-        users,
-        users::{ActiveModel, Model},
+        users::{self, ActiveModel, Model, User},
     },
     serializers::Status,
 };
@@ -48,9 +47,8 @@ async fn get_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Respo
 }
 
 #[post("/users")]
-async fn create_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
+async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
-
     let mut user: ActiveModel = ActiveModel {
         full_name: Set(obj.full_name.to_owned()),
         email: Set(obj.email.to_owned()),
@@ -63,7 +61,6 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl R
         ..Default::default()
     };
     user.encrypt("pass".to_string());
-
     user.insert(conn).await.unwrap();
 
     HttpResponse::Ok()
