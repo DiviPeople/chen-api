@@ -2,20 +2,19 @@ mod config;
 mod handlers;
 mod models;
 mod entity;
-mod encryption;
 
 use actix_web::{App, HttpServer, middleware::Logger, web::Data};
 use env_logger::Env;
 use std::io;
 use sea_orm::Database;
-use crate::config::Config;
+use crate::config::AppConfig;
 use crate::models::AppState;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-    let config = Config::from_env().unwrap();
+    let config = AppConfig::from_env().unwrap();
 
     let db_url = format!(
         "postgres://{}:{}@{}:{}/{}",

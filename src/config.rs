@@ -5,7 +5,7 @@ use serde::Deserialize;
 pub use config::ConfigError;
 
 #[derive(Deserialize)]
-pub struct Config {
+pub struct AppConfig {
     pub server_host: String,
     pub server_port: i32,
     pub db_name: String,
@@ -15,7 +15,7 @@ pub struct Config {
     pub db_password: String,
 }
 
-impl Config {
+impl AppConfig{
     pub fn from_env() -> Result<Self, ConfigError> {
         dotenv().ok();
 
@@ -24,3 +24,4 @@ impl Config {
         cfg.try_into()
     }
 }
+
