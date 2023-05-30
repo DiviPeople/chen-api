@@ -1,5 +1,6 @@
 use color_eyre::Result;
 use dotenvy::dotenv;
+use std::env;
 use serde::Deserialize;
 use argon2::{self, Config, ThreadMode, Variant, Version};
 
@@ -23,6 +24,25 @@ impl AppConfig{
         let mut cfg = config::Config::new();
         cfg.merge(config::Environment::new())?;
         cfg.try_into()
+    }
+}
+
+#[derive(Deserialize)]
+pub struct EmailConfig {
+   pub email_from: String,
+   pub email_password: String,
+   pub email_reply_to: String,
+}
+
+impl EmailConfig {
+    pub fn from_env() -> EmailConfig{
+        dotenv().ok();
+        
+        EmailConfig {
+            email_from: env::var("EMAIL_FROM").expect("EMAIL_FROM must be set"),
+            email_password: env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD must be set"),
+            email_reply_to: env::var("EMAIL_REPLY_TO").expect("EMAIL_REPLY_TO must be set"),
+        }
     }
 }
 

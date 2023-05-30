@@ -1,5 +1,6 @@
 use actix_web::{get, put, post, delete, web, Responder, HttpResponse};
 use sea_orm::{ActiveModelTrait, EntityTrait, IntoActiveModel, DatabaseConnection, QuerySelect, Set};
+use rand::distributions::{Alphanumeric, DistString};
 use crate::{
     models::Status, AppState, entity::{
         users, users::{ActiveModel, Model, User}, 
@@ -52,7 +53,9 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Re
         integrations: Set(obj.integrations.to_owned()),
         ..Default::default()
     };
-    user.encrypt("pass".to_string());
+    let pass = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
+    user.send_password(&obj.email, &pass);
+    user.encrypt(pass.to_string());
     user.insert(conn).await.unwrap();
 
     HttpResponse::Ok()

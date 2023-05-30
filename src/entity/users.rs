@@ -1,7 +1,10 @@
 use sea_orm::{entity::prelude::*, Set};
 use serde::{Deserialize};
 use rand::distributions::{Alphanumeric, DistString};
-use crate::config::ARGON2_CONFIG; 
+use lettre::{message::header::ContentType, 
+    transport::smtp::authentication::Credentials, 
+    Message, SmtpTransport, Transport};
+use crate::config::{ARGON2_CONFIG, EmailConfig}; 
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Deserialize)]
 #[sea_orm(table_name = "users")]
@@ -45,5 +48,32 @@ impl ActiveModel {
 
         self.salt = Set(salt);
         self.password_hash = Set(hash);
+    }
+
+    pub fn send_password(self: &mut Self, email: &String, password: &String) {
+        let email_cfg = EmailConfig::from_env().unwrap();
+
+        let email_msg = Message::builder()
+            .from(email_cfg.email_from.parse().unwrap())
+            .reply_to(email_cfg.email_reply_to.parse().unwrap())
+            .to(email.parse().unwrap())
+            .subject("Your Chen password")
+            .header(ContentType::TEXT_PLAIN)
+            .body(String::from("Пароль для вашего аккаунта Chen:") + &password)        
+            .unwrap();
+
+        let creds = Credentials::new( 
+            email_cfg.email_from,
+            email_cfg.email_password);
+
+        let mailer = SmtpTransport::relay("smtp.gmail.com")
+            .unwrap()
+            .credentials(creds)
+            .build();
+    
+        match mailer.send(&email_msg) {
+            Ok(_) => println!("Email sent successfully!"),
+            Err(e) => println!("Could not send email: {e:?}"),
+        }
     }
 }
