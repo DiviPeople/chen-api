@@ -1,4 +1,8 @@
-use crate::config::ARGON2_CONFIG;
+use crate::config::{EmailConfig, ARGON2_CONFIG};
+use lettre::{
+    message::header::ContentType, transport::smtp::authentication::Credentials, Message,
+    SmtpTransport, Transport,
+};
 use rand::distributions::{Alphanumeric, DistString};
 use sea_orm::{entity::prelude::*, Set};
 use serde::Deserialize;
@@ -49,5 +53,30 @@ impl ActiveModel {
 
         self.salt = Set(salt);
         self.password_hash = Set(hash);
+    }
+
+    pub fn send_password(&mut self, email: &str, password: &String) {
+        let email_cfg = EmailConfig::from_env();
+
+        let email_msg = Message::builder()
+            .from(email_cfg.email_from.parse().unwrap())
+            .reply_to(email_cfg.email_reply_to.parse().unwrap())
+            .to(email.parse().unwrap())
+            .subject("Your Chen password")
+            .header(ContentType::TEXT_PLAIN)
+            .body(String::from("Пароль для вашего аккаунта Chen:") + password)
+            .unwrap();
+
+        let creds = Credentials::new(email_cfg.email_from, email_cfg.email_password);
+
+        let mailer = SmtpTransport::relay("smtp.gmail.com")
+            .unwrap()
+            .credentials(creds)
+            .build();
+
+        match mailer.send(&email_msg) {
+            Ok(_) => println!("Email sent successfully!"),
+            Err(e) => println!("Could not send email: {e:?}"),
+        }
     }
 }
