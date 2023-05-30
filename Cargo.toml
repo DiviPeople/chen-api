@@ -23,3 +23,5 @@ sea-orm = { version = "0.11.3", features = [
 ] }
 rust-argon2 = "1.0.0"
 rand = "0.8.5"
+lettre = "0.10.4"
+lettre_email = "0.9.4"
