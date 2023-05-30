@@ -3,8 +3,9 @@
 ## Установка зависимостей
 
 Chen-api требует
-* rust 1.69.0 и выше. Инструкция по установке [здесь](https://www.rust-lang.org/tools/install)
-* Docker, инструкцию по установке которого можно найти [здесь](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-engine---community-1).
+
+- rust 1.69.0 и выше. Инструкция по установке [здесь](https://www.rust-lang.org/tools/install)
+- Docker, инструкцию по установке которого можно найти [здесь](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-engine---community-1).
 
 ## Подготовка к запуску и запуск
 
@@ -20,6 +21,10 @@ DB_USER=actix
 DB_PASSWORD=actix
 
 DATABASE_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+
+EMAIL_FROM="example@gmail.com"
+EMAIL_PASSWORD="application_password"
+EMAIL_REPLY_TO="example@gmail.com"
 ```
 
 запускаем docker compose с базой postgres
