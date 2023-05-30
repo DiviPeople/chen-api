@@ -27,6 +27,10 @@ DB_USER=actix
 DB_PASSWORD=actix
 
 DATABASE_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+
+EMAIL_FROM="example@gmail.com"
+EMAIL_PASSWORD="application_password"
+EMAIL_REPLY_TO="example@gmail.com"
 ```
 
 запускаем docker compose с базой postgres
