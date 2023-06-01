@@ -130,17 +130,7 @@ async fn get_users(data: web::Data<AppState>) -> impl Responder {
     HttpResponse::Ok().json(users)
 }
 
-#[get("/users/{id}")]
-async fn get_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Responder {
-    let conn: &DatabaseConnection = &data.conn;
-    let id: i32 = path.into_inner();
-    let user: Option<serde_json::Value> =
-        Users::find_by_id(id).into_json().one(conn).await.unwrap();
-
-    HttpResponse::Ok().json(user)
-}
-
-#[post("/users")]
+#[post("/user")]
 async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let mut user: ActiveModel = ActiveModel {
@@ -156,6 +146,7 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Re
     };
     let pass = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
     user.send_password(&obj.email, &pass).await;
+    user.set_id();
     user.send_invitation(&obj.email).await;
     user.encrypt(pass.to_string());
     user.insert(conn).await.unwrap();
@@ -163,14 +154,10 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Re
     HttpResponse::Ok()
 }
 
-#[put("/users/{id}")]
-async fn update_user(
-    data: web::Data<AppState>,
-    path: web::Path<i32>,
-    obj: web::Json<Model>,
-) -> impl Responder {
+#[put("/user")]
+async fn update_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
-    let id: i32 = path.into_inner();
+    let id = obj.id.to_owned();
     let user: Option<Model> = Users::find_by_id(id).one(conn).await.unwrap();
     let mut user: ActiveModel = user.unwrap().into();
 
@@ -190,10 +177,10 @@ async fn update_user(
     HttpResponse::Ok()
 }
 
-#[delete("/users/{id}")]
-async fn delete_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Responder {
+#[delete("/user")]
+async fn delete_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
-    let id: i32 = path.into_inner();
+    let id = obj.id.to_owned();
     let user: Option<Model> = Users::find_by_id(id).one(conn).await.unwrap();
     let user: Model = user.unwrap();
     users::Entity::delete(user.into_active_model())
@@ -207,7 +194,6 @@ async fn delete_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Re
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(status)
         .service(get_users)
-        .service(get_user)
         .service(create_user)
         .service(update_user)
         .service(delete_user)

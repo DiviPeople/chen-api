@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Serialize)]
 pub struct Status {
@@ -7,7 +8,7 @@ pub struct Status {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
-    pub sub: i32,
+    pub sub: Uuid,
     pub iat: usize,
     pub exp: usize,
 }
