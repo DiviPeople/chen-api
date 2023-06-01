@@ -156,6 +156,7 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Re
     };
     let pass = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
     user.send_password(&obj.email, &pass).await;
+    user.send_invitation(&obj.email).await;
     user.encrypt(pass.to_string());
     user.insert(conn).await.unwrap();
 
