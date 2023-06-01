@@ -16,6 +16,8 @@ pub struct AppConfig {
     pub db_port: String,
     pub db_user: String,
     pub db_password: String,
+    pub jwt_secret: String,
+    pub jwt_expires_in: String,
 }
 
 impl AppConfig {
@@ -30,6 +32,8 @@ impl AppConfig {
             db_port: env::var("DB_PORT").expect("DB_PORT must be set"),
             db_user: env::var("DB_USER").expect("DB_USER must be set"),
             db_password: env::var("DB_PASSWORD").expect("DB_PASSWORD must be set"),
+            jwt_secret: env::var("JWT_SECRET").expect("JWT_SECRET must be set"),
+            jwt_expires_in: env::var("JWT_EXPIRES_IN").expect("JWT_EXPIRES_IN must be set"),
         }
     }
 }
