@@ -5,9 +5,10 @@ use actix_web::{dev::Payload, Error as ActixWebError};
 use actix_web::{http, FromRequest, HttpMessage, HttpRequest};
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use std::future::{ready, Ready};
+use uuid::Uuid;
 
 pub struct JwtMiddleware {
-    pub user_id: i32,
+    pub user_id: Uuid,
 }
 
 impl FromRequest for JwtMiddleware {

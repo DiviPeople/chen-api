@@ -13,7 +13,7 @@ use serde_json::json;
 #[sea_orm(table_name = "users")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: Uuid,
     pub full_name: String,
     pub email: String,
     pub password_hash: String,
@@ -44,6 +44,10 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl ActiveModel {
+    pub fn set_id(&mut self) {
+        self.id = Set(Uuid::new_v4());
+    }
+
     pub fn encrypt(&mut self, password_hash: String) {
         let salt: String = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
         let hash: String = argon2::hash_encoded(
