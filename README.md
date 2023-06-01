@@ -34,6 +34,9 @@ EMAIL_REPLY_TO="example@gmail.com"
 
 JWT_SECRET="my_secret"
 JWT_EXPIRES_IN=1
+
+GITHUB_TOKEN="my_token"
+ORG_URL="https://api.github.com/orgs/[ORGANIZATION_NAME]/invitations"
 ```
 
 запускаем docker compose с базой postgres
