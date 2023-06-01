@@ -18,6 +18,8 @@ pub struct AppConfig {
     pub db_password: String,
     pub jwt_secret: String,
     pub jwt_expires_in: String,
+    pub github_token: String,
+    pub org_url: String,
 }
 
 impl AppConfig {
@@ -34,6 +36,8 @@ impl AppConfig {
             db_password: env::var("DB_PASSWORD").expect("DB_PASSWORD must be set"),
             jwt_secret: env::var("JWT_SECRET").expect("JWT_SECRET must be set"),
             jwt_expires_in: env::var("JWT_EXPIRES_IN").expect("JWT_EXPIRES_IN must be set"),
+            github_token: env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN must be set"),
+            org_url: env::var("ORG_URL").expect("ORG_URL must be set"),
         }
     }
 }

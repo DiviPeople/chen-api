@@ -1,11 +1,13 @@
-use crate::config::{EmailConfig, ARGON2_CONFIG};
+use crate::config::{AppConfig, EmailConfig, ARGON2_CONFIG};
 use lettre::{
     message::header::ContentType, transport::smtp::authentication::Credentials, Message,
     SmtpTransport, Transport,
 };
 use rand::distributions::{Alphanumeric, DistString};
+use reqwest::{header::USER_AGENT, Client};
 use sea_orm::{entity::prelude::*, Set};
 use serde::Deserialize;
+use serde_json::json;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Deserialize)]
 #[sea_orm(table_name = "users")]
@@ -78,5 +80,22 @@ impl ActiveModel {
             Ok(_) => println!("Email sent successfully!"),
             Err(e) => println!("Could not send email: {e:?}"),
         }
+    }
+
+    pub async fn send_invitation(&mut self, email: &String) {
+        let json = json!({ "email": email });
+        let token = AppConfig::from_env().github_token;
+        let url = AppConfig::from_env().org_url;
+
+        Client::new()
+            .post(url)
+            .bearer_auth(&token)
+            .header(USER_AGENT, format!("Bearer {}", token.to_owned()))
+            .header("X-GitHub-Api-Version", "2022-11-28")
+            .header("Accept", "application/vnd.github+json")
+            .body(json.to_string())
+            .send()
+            .await
+            .unwrap();
     }
 }
