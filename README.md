@@ -31,6 +31,9 @@ DATABASE_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NA
 EMAIL_FROM="example@gmail.com"
 EMAIL_PASSWORD="application_password"
 EMAIL_REPLY_TO="example@gmail.com"
+
+JWT_SECRET="my_secret"
+JWT_EXPIRES_IN=1
 ```
 
 запускаем docker compose с базой postgres

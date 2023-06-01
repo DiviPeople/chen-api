@@ -1,6 +1,7 @@
 mod config;
 mod entity;
 mod handlers;
+mod jwt_auth;
 mod serializers;
 
 use self::config::AppState;
