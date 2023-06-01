@@ -13,10 +13,9 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(Users::Id)
-                            .integer()
+                            .uuid()
                             .not_null()
-                            .auto_increment()
-                            .primary_key(),
+                            .primary_key()
                     )
                     .col(ColumnDef::new(Users::FullName).string().not_null())
                     .col(ColumnDef::new(Users::Email).string().not_null())
