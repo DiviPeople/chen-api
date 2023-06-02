@@ -14,6 +14,7 @@ use serde_json::json;
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: Uuid,
+    pub user_name: String,
     pub full_name: String,
     pub email: String,
     pub password_hash: String,
@@ -28,6 +29,7 @@ pub struct Model {
 
 #[derive(Deserialize)]
 pub struct User {
+    pub user_name: String,
     pub full_name: String,
     pub email: String,
     pub is_superuser: bool,
@@ -97,6 +99,32 @@ impl ActiveModel {
             .header(USER_AGENT, format!("Bearer {}", token.to_owned()))
             .header("X-GitHub-Api-Version", "2022-11-28")
             .header("Accept", "application/vnd.github+json")
+            .body(json.to_string())
+            .send()
+            .await
+            .unwrap();
+    }
+
+    pub async fn rc_create_user(
+        &mut self,
+        full_name: &String,
+        email: &String,
+        password: &String,
+        user_name: &String,
+    ) {
+        let json =
+            json!({"name":full_name, "email": email, "password": password, "username": user_name});
+        let rc_org_url = AppConfig::from_env().rc_org_url;
+        let rc_token = AppConfig::from_env().rc_token;
+        let rc_admin_id = AppConfig::from_env().rc_admin_id;
+
+        let url_endpoint = format!("{}/api/v1/users.create", rc_org_url);
+
+        Client::new()
+            .post(url_endpoint)
+            .header("X-Auth-Token", rc_token)
+            .header("X-User-Id", rc_admin_id)
+            .header("Content-Type", "application/json")
             .body(json.to_string())
             .send()
             .await

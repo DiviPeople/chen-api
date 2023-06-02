@@ -17,6 +17,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key()
                     )
+                    .col(ColumnDef::new(Users::UserName).string().not_null())
                     .col(ColumnDef::new(Users::FullName).string().not_null())
                     .col(ColumnDef::new(Users::Email).string().not_null())
                     .col(ColumnDef::new(Users::PasswordHash).string())
@@ -43,6 +44,7 @@ impl MigrationTrait for Migration {
 enum Users {
     Table,
     Id,
+    UserName,
     FullName,
     Email,
     PasswordHash,

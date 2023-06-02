@@ -20,6 +20,9 @@ pub struct AppConfig {
     pub jwt_expires_in: String,
     pub github_token: String,
     pub org_url: String,
+    pub rc_org_url: String,
+    pub rc_token: String,
+    pub rc_admin_id: String,
 }
 
 impl AppConfig {
@@ -38,6 +41,9 @@ impl AppConfig {
             jwt_expires_in: env::var("JWT_EXPIRES_IN").expect("JWT_EXPIRES_IN must be set"),
             github_token: env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN must be set"),
             org_url: env::var("ORG_URL").expect("ORG_URL must be set"),
+            rc_org_url: env::var("RC_ORG_URL").expect("RC_ORG_URL must be set"),
+            rc_token: env::var("RC_TOKEN").expect("RC_TOKEN must be set"),
+            rc_admin_id: env::var("RC_ADMIN_ID").expect("RC_ADMIN_ID must be set"),
         }
     }
 }
