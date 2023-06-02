@@ -37,6 +37,10 @@ JWT_EXPIRES_IN=1
 
 GITHUB_TOKEN="my_token"
 ORG_URL="https://api.github.com/orgs/[ORGANIZATION_NAME]/invitations"
+
+RC_TOKEN="my_token"
+RC_ORG_URL="http://[CHAT_URL]"
+RC_ADMIN_ID="admin_id"
 ```
 
 запускаем docker compose с базой postgres
