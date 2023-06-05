@@ -1,3 +1,5 @@
+use actix_cors::Cors;
+use actix_web::http;
 use argon2::{self, Config, ThreadMode, Variant, Version};
 use dotenvy::dotenv;
 use sea_orm::DatabaseConnection;
@@ -64,6 +66,37 @@ impl EmailConfig {
             email_password: env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD must be set"),
             email_reply_to: env::var("EMAIL_REPLY_TO").expect("EMAIL_REPLY_TO must be set"),
         }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct CorsConfig {
+    pub protocol: String,
+    pub host: String,
+    pub port: String,
+}
+
+impl CorsConfig {
+    pub fn from_env() -> CorsConfig {
+        dotenv().ok();
+
+        CorsConfig {
+            protocol: env::var("CORS_PROTOCOL").expect("CORS_PROTOCOL must be set"),
+            host: env::var("CORS_HOST").expect("CORS_HOST must be set"),
+            port: env::var("CORS_PORT").expect("CORS_PORT must be set"),
+        }
+    }
+
+    pub fn set_cors(protocol: &String, host: &String, port: &String) -> Cors {
+        Cors::default()
+            .allowed_origin(format!("{}://{}:{}", protocol, host, port).as_str())
+            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+            .allowed_headers(vec![
+                http::header::AUTHORIZATION,
+                http::header::ACCEPT,
+                http::header::CONTENT_TYPE,
+            ])
+            .max_age(3600)
     }
 }
 
