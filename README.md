@@ -41,6 +41,10 @@ ORG_URL="https://api.github.com/orgs/[ORGANIZATION_NAME]/invitations"
 RC_TOKEN="my_token"
 RC_ORG_URL="http://[CHAT_URL]"
 RC_ADMIN_ID="admin_id"
+
+CORS_PROTOCOL="http"
+CORS_HOST="localhost"
+CORS_PORT="5173"
 ```
 
 запускаем docker compose с базой postgres
