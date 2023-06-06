@@ -160,6 +160,8 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Re
     user.set_id();
     user.rc_create_user(&obj.full_name, &obj.email, &pass, &obj.user_name)
         .await;
+    user.nc_create_user(&obj.full_name, &obj.email, &pass, &obj.user_name)
+        .await;
     user.send_invitation(&obj.email).await;
     user.encrypt(pass.to_string());
     user.insert(conn).await.unwrap();

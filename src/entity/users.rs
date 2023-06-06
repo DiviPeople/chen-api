@@ -135,4 +135,36 @@ impl ActiveModel {
             .await
             .unwrap();
     }
+
+    pub async fn nc_create_user(
+        &mut self,
+        full_name: &String,
+        email: &String,
+        password: &String,
+        user_name: &String,
+    ) {
+        let create_list = format!(
+            "userid={}&email={}&password={}&displayName={}",
+            full_name, email, password, user_name
+        );
+        let nc_org_url = AppConfig::from_env().nc_org_url;
+        let nc_login_admin = AppConfig::from_env().nc_login_admin;
+        let nc_password_admin = AppConfig::from_env().nc_password_admin;
+
+        reqwest::Client::builder()
+            .redirect(reqwest::redirect::Policy::none())
+            .build()
+            .unwrap()
+            .post(nc_org_url)
+            .basic_auth(nc_login_admin, Some(nc_password_admin))
+            .header("OCS-APIRequest", "true")
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(create_list)
+            .send()
+            .await
+            .unwrap()
+            .text()
+            .await
+            .unwrap();
+    }
 }
