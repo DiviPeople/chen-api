@@ -1,8 +1,9 @@
 use crate::config::AppConfig;
 use crate::serializers::TokenClaims;
-use actix_web::error::ErrorUnauthorized;
-use actix_web::{dev::Payload, Error as ActixWebError};
-use actix_web::{http, FromRequest, HttpMessage, HttpRequest};
+use actix_web::{
+    dev::Payload, error::ErrorUnauthorized, http, Error as ActixWebError, FromRequest, HttpMessage,
+    HttpRequest,
+};
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use std::future::{ready, Ready};
 use uuid::Uuid;
@@ -25,7 +26,6 @@ impl FromRequest for JwtMiddleware {
                     .get(http::header::AUTHORIZATION)
                     .map(|h| h.to_str().unwrap().split_at(7).1.to_string())
             });
-
         if token.is_none() {
             return ready(Err(ErrorUnauthorized("You are not logged in")));
         }

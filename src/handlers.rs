@@ -11,6 +11,7 @@ use actix_web::{
     cookie::{time::Duration as CookieDuration, Cookie},
     delete, get, post, put, web, HttpResponse, Responder,
 };
+use actix_web_grants::proc_macro::has_any_role;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use rand::distributions::{Alphanumeric, DistString};
@@ -20,6 +21,7 @@ use sea_orm::{
 };
 
 #[get("/")]
+#[has_any_role("SUPERUSER", "STAFF", "INTERN", "USER")]
 pub async fn status() -> impl Responder {
     HttpResponse::Ok().json(Status {
         status: "UP".to_string(),
@@ -27,6 +29,7 @@ pub async fn status() -> impl Responder {
 }
 
 #[post("/login")]
+#[has_any_role("SUPERUSER", "STAFF", "INTERN", "USER")]
 async fn login(data: web::Data<AppState>, body: web::Json<LoginUserSchema>) -> impl Responder {
     let conn = &data.conn;
     let user: Option<users::Model> = Users::find()
@@ -82,6 +85,7 @@ async fn login(data: web::Data<AppState>, body: web::Json<LoginUserSchema>) -> i
 }
 
 #[get("/logout")]
+#[has_any_role("SUPERUSER", "STAFF", "INTERN")]
 async fn logout(_: jwt_auth::JwtMiddleware) -> impl Responder {
     let cookie = Cookie::build("token", "")
         .path("/")
@@ -93,6 +97,7 @@ async fn logout(_: jwt_auth::JwtMiddleware) -> impl Responder {
 }
 
 #[get("/me")]
+#[has_any_role("SUPERUSER", "STAFF", "INTERN", "USER")]
 async fn get_me(data: web::Data<AppState>, jwt: jwt_auth::JwtMiddleware) -> impl Responder {
     let conn = &data.conn;
     let uid = jwt.user_id;
@@ -113,6 +118,7 @@ async fn get_me(data: web::Data<AppState>, jwt: jwt_auth::JwtMiddleware) -> impl
 }
 
 #[get("/users")]
+#[has_any_role("SUPERUSER", "STAFF")]
 async fn get_users(data: web::Data<AppState>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let users: Vec<serde_json::Value> = Users::find()
@@ -131,6 +137,7 @@ async fn get_users(data: web::Data<AppState>) -> impl Responder {
 }
 
 #[post("/user")]
+#[has_any_role("SUPERUSER", "STAFF")]
 async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let mut user: ActiveModel = ActiveModel {
@@ -154,10 +161,11 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Re
     user.encrypt(pass.to_string());
     user.insert(conn).await.unwrap();
 
-    HttpResponse::Ok()
+    HttpResponse::Ok().await
 }
 
 #[put("/user")]
+#[has_any_role("SUPERUSER", "STAFF")]
 async fn update_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let id = obj.id.to_owned();
@@ -177,10 +185,11 @@ async fn update_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl R
 
     user.update(conn).await.unwrap();
 
-    HttpResponse::Ok()
+    HttpResponse::Ok().await
 }
 
 #[delete("/user")]
+#[has_any_role("SUPERUSER", "STAFF")]
 async fn delete_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let id = obj.id.to_owned();
@@ -191,7 +200,7 @@ async fn delete_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl R
         .await
         .unwrap();
 
-    HttpResponse::Ok()
+    HttpResponse::Ok().await
 }
 
 pub fn config(cfg: &mut web::ServiceConfig) {
