@@ -45,6 +45,10 @@ RC_ADMIN_ID="admin_id"
 CORS_PROTOCOL="http"
 CORS_HOST="localhost"
 CORS_PORT="5173"
+
+NC_ORG_URL="http://[YOUR_SERVER]/ocs/v1.php/cloud/users"
+NC_LOGIN_ADMIN="login_admin"
+NC_PASSWORD_ADMIN="password_admin"
 ```
 
 запускаем docker compose с базой postgres

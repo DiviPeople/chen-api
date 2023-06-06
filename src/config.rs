@@ -25,6 +25,9 @@ pub struct AppConfig {
     pub rc_org_url: String,
     pub rc_token: String,
     pub rc_admin_id: String,
+    pub nc_org_url: String,
+    pub nc_login_admin: String,
+    pub nc_password_admin: String,
 }
 
 impl AppConfig {
@@ -46,6 +49,10 @@ impl AppConfig {
             rc_org_url: env::var("RC_ORG_URL").expect("RC_ORG_URL must be set"),
             rc_token: env::var("RC_TOKEN").expect("RC_TOKEN must be set"),
             rc_admin_id: env::var("RC_ADMIN_ID").expect("RC_ADMIN_ID must be set"),
+            nc_org_url: env::var("NC_ORG_URL").expect("NC_ORG_URL must be set"),
+            nc_login_admin: env::var("NC_LOGIN_ADMIN").expect("NC_LOGIN_ADMIN must be set"),
+            nc_password_admin: env::var("NC_PASSWORD_ADMIN")
+                .expect("NC_PASSWORD_ADMIN must be set"),
         }
     }
 }
