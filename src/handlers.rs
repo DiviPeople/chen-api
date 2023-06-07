@@ -157,6 +157,8 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<User>) -> impl Re
     let pass = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
     user.send_password(&obj.email, &pass).await;
     user.encrypt(pass.to_string());
+    user.user_create_time_set();
+    user.user_update_time_set();
     user.insert(conn).await.unwrap();
 
     HttpResponse::Ok()
@@ -184,6 +186,7 @@ async fn update_user(
     user.updated_at = Set(obj.updated_at.to_owned());
     user.integrations = Set(obj.integrations.to_owned());
 
+    user.user_update_time_set();
     user.update(conn).await.unwrap();
 
     HttpResponse::Ok()

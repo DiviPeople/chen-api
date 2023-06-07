@@ -1,4 +1,5 @@
 use crate::config::{EmailConfig, ARGON2_CONFIG};
+use chrono::{offset::Local, NaiveDateTime};
 use lettre::{
     message::header::ContentType, transport::smtp::authentication::Credentials, Message,
     SmtpTransport, Transport,
@@ -19,8 +20,8 @@ pub struct Model {
     pub is_superuser: bool,
     pub is_staff: bool,
     pub img_url: Option<String>,
-    pub created_at: Option<DateTime>,
-    pub updated_at: Option<DateTime>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
     pub integrations: Option<Json>,
 }
 
@@ -31,8 +32,8 @@ pub struct User {
     pub is_superuser: bool,
     pub is_staff: bool,
     pub img_url: Option<String>,
-    pub created_at: Option<DateTime>,
-    pub updated_at: Option<DateTime>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
     pub integrations: Option<Json>,
 }
 
@@ -42,6 +43,16 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 impl ActiveModel {
+    pub fn user_create_time_set(&mut self) {
+        let dt = Local::now().naive_local();
+        self.created_at = Set(Option::from(dt))
+    }
+
+    pub fn user_update_time_set(&mut self) {
+        let dt = Local::now().naive_local();
+        self.updated_at = Set(Option::from(dt))
+    }
+
     pub fn encrypt(&mut self, password_hash: String) {
         let salt: String = Alphanumeric.sample_string(&mut rand::thread_rng(), 16);
         let hash: String = argon2::hash_encoded(
