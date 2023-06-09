@@ -9,6 +9,8 @@ pub struct Status {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
     pub sub: Uuid,
+    pub is_superuser: bool,
+    pub is_staff: bool,
     pub iat: usize,
     pub exp: usize,
 }
