@@ -59,6 +59,8 @@ async fn login(data: web::Data<AppState>, body: web::Json<LoginUserSchema>) -> i
         .timestamp() as usize;
     let claims: TokenClaims = TokenClaims {
         sub: user.id,
+        is_superuser: user.is_superuser,
+        is_staff: user.is_staff,
         exp,
         iat,
     };
@@ -76,9 +78,7 @@ async fn login(data: web::Data<AppState>, body: web::Json<LoginUserSchema>) -> i
         .http_only(true)
         .finish();
 
-    HttpResponse::Ok()
-        .cookie(cookie)
-        .json(format!("success, token: {}", token))
+    HttpResponse::Ok().cookie(cookie).json(token)
 }
 
 #[get("/logout")]
