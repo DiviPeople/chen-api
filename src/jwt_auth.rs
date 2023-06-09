@@ -9,6 +9,8 @@ use uuid::Uuid;
 
 pub struct JwtMiddleware {
     pub user_id: Uuid,
+    pub is_superuser: bool,
+    pub is_staff: bool,
 }
 
 impl FromRequest for JwtMiddleware {
@@ -42,8 +44,15 @@ impl FromRequest for JwtMiddleware {
         };
 
         let user_id = claims.sub;
+        let is_superuser = claims.is_superuser;
+        let is_staff = claims.is_staff;
+
         req.extensions_mut().insert(user_id.to_owned());
 
-        ready(Ok(JwtMiddleware { user_id }))
+        ready(Ok(JwtMiddleware {
+            user_id,
+            is_superuser,
+            is_staff,
+        }))
     }
 }
