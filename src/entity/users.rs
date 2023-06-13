@@ -55,7 +55,7 @@ impl ActiveModel {
         self.password_hash = Set(hash);
     }
 
-    pub fn send_password(&mut self, email: &str, password: &String) {
+    pub async fn send_password(&mut self, email: &str, password: &String) {
         let email_cfg = EmailConfig::from_env();
 
         let email_msg = Message::builder()
