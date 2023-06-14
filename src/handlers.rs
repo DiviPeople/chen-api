@@ -124,6 +124,8 @@ async fn get_users(data: web::Data<AppState>) -> impl Responder {
     let users: Vec<serde_json::Value> = Users::find()
         .select_only()
         .columns([
+            users::Column::Id,
+            users::Column::UserName,
             users::Column::FullName,
             users::Column::Email,
             users::Column::IsStaff,
