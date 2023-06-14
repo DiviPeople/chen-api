@@ -2,7 +2,7 @@ use crate::{
     config::{AppConfig, AppState, ARGON2_CONFIG},
     entity::{
         prelude::Users,
-        users::{self, ActiveModel, Model, User},
+        users::{self, ActiveModel, DeleteUser, Model, User},
     },
     jwt_auth,
     serializers::{LoginUserSchema, Status, TokenClaims},
@@ -190,10 +190,13 @@ async fn update_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl R
 
 #[delete("/user")]
 #[has_any_role("SUPERUSER", "STAFF")]
-async fn delete_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl Responder {
+async fn delete_user(data: web::Data<AppState>, obj: web::Json<DeleteUser>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
-    let id = obj.id.to_owned();
-    let user: Option<Model> = Users::find_by_id(id).one(conn).await.unwrap();
+    let user: Option<users::Model> = Users::find()
+        .filter(users::Column::UserName.contains(&obj.user_name))
+        .one(conn)
+        .await
+        .unwrap();
     let user: Model = user.unwrap();
     users::Entity::delete(user.into_active_model())
         .exec(conn)
