@@ -40,6 +40,11 @@ pub struct User {
     pub integrations: Option<Json>,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct DeleteUser {
+    pub user_name: String,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
