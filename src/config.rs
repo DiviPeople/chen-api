@@ -96,6 +96,7 @@ impl CorsConfig {
                 http::header::ACCEPT,
                 http::header::CONTENT_TYPE,
             ])
+            .supports_credentials()
             .max_age(3600)
     }
 }
