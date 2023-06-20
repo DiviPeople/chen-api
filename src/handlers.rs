@@ -118,7 +118,7 @@ async fn get_me(data: web::Data<AppState>, jwt: jwt_auth::JwtMiddleware) -> impl
 }
 
 #[get("/users")]
-#[has_any_role("SUPERUSER", "STAFF")]
+#[has_any_role("SUPERUSER", "STAFF", "INTERN")]
 async fn get_users(data: web::Data<AppState>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let users: Vec<serde_json::Value> = Users::find()
