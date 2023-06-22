@@ -1,14 +1,14 @@
 mod config;
-mod handlers;
 mod entity;
+mod handlers;
 mod serializers;
 
-use actix_web::{App, HttpServer, middleware::Logger, web::Data};
-use env_logger::Env;
-use std::io;
-use sea_orm::Database;
-use crate::config::Config;
 use self::config::AppState;
+use crate::config::Config;
+use actix_web::{middleware::Logger, web::Data, App, HttpServer};
+use env_logger::Env;
+use sea_orm::Database;
+use std::io;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
@@ -26,13 +26,11 @@ async fn main() -> io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(Data::new(AppState {
-                conn: conn.clone(),
-            }))
+            .app_data(Data::new(AppState { conn: conn.clone() }))
             .configure(handlers::config)
             .wrap(Logger::default())
     })
-        .bind(server_addr)?
-        .run()
-        .await
+    .bind(server_addr)?
+    .run()
+    .await
 }

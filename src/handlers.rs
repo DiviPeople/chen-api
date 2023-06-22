@@ -1,32 +1,38 @@
-use actix_web::{get, put, post, delete, web, Responder, HttpResponse};
-use sea_orm::{ActiveModelTrait, EntityTrait, IntoActiveModel, DatabaseConnection, QuerySelect, Set};
 use crate::{
-    entity::{
-        prelude::Users, users,
-        users::{ActiveModel, Model}
-    },
     config::AppState,
+    entity::{
+        prelude::Users,
+        users,
+        users::{ActiveModel, Model},
+    },
     serializers::Status,
+};
+use actix_web::{delete, get, post, put, web, HttpResponse, Responder};
+use sea_orm::{
+    ActiveModelTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QuerySelect, Set,
 };
 
 #[get("/")]
 pub async fn status() -> impl Responder {
-    HttpResponse::Ok()
-        .json(Status {status: "UP".to_string()})
+    HttpResponse::Ok().json(Status {
+        status: "UP".to_string(),
+    })
 }
 
 #[get("/users")]
 async fn get_users(data: web::Data<AppState>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
-    let users: Vec<serde_json::Value> = Users::find().select_only().columns([ 
-        users::Column::FullName, 
-        users::Column::Email, 
-        users::Column::IsStaff,
-    ])
-    .into_json()
-    .all(conn)
-    .await
-    .unwrap();
+    let users: Vec<serde_json::Value> = Users::find()
+        .select_only()
+        .columns([
+            users::Column::FullName,
+            users::Column::Email,
+            users::Column::IsStaff,
+        ])
+        .into_json()
+        .all(conn)
+        .await
+        .unwrap();
 
     HttpResponse::Ok().json(users)
 }
@@ -35,7 +41,8 @@ async fn get_users(data: web::Data<AppState>) -> impl Responder {
 async fn get_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let id: i32 = path.into_inner();
-    let user: Option<serde_json::Value> = Users::find_by_id(id).into_json().one(conn).await.unwrap();
+    let user: Option<serde_json::Value> =
+        Users::find_by_id(id).into_json().one(conn).await.unwrap();
 
     HttpResponse::Ok().json(user)
 }
@@ -62,7 +69,11 @@ async fn create_user(data: web::Data<AppState>, obj: web::Json<Model>) -> impl R
 }
 
 #[put("/users/{id}")]
-async fn update_user(data: web::Data<AppState>, path: web::Path<i32>, obj: web::Json<Model>) -> impl Responder {
+async fn update_user(
+    data: web::Data<AppState>,
+    path: web::Path<i32>,
+    obj: web::Json<Model>,
+) -> impl Responder {
     let conn: &DatabaseConnection = &data.conn;
     let id: i32 = path.into_inner();
     let user: Option<Model> = Users::find_by_id(id).one(conn).await.unwrap();
@@ -92,7 +103,7 @@ async fn delete_user(data: web::Data<AppState>, path: web::Path<i32>) -> impl Re
     let user: Model = user.unwrap();
     users::Entity::delete(user.into_active_model())
         .exec(conn)
-        .await  
+        .await
         .unwrap();
 
     HttpResponse::Ok()
@@ -104,5 +115,5 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(get_user)
         .service(create_user)
         .service(update_user)
-        .service(delete_user);  
+        .service(delete_user);
 }

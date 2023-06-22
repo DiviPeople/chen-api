@@ -1,6 +1,6 @@
 use dotenvy::dotenv;
-use std::env;
 use sea_orm::DatabaseConnection;
+use std::env;
 
 pub struct AppState {
     pub conn: DatabaseConnection,
