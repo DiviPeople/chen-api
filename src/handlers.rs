@@ -105,6 +105,7 @@ async fn get_me(data: web::Data<AppState>, jwt: jwt_auth::JwtMiddleware) -> impl
     let user: Option<serde_json::Value> = Users::find_by_id(uid)
         .select_only()
         .columns([
+            users::Column::UserName,
             users::Column::FullName,
             users::Column::Email,
             users::Column::IsStaff,
