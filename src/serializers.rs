@@ -25,3 +25,10 @@ pub struct LoginUserSchema {
 pub struct UserResponse {
     pub status: String,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct ChangePassword {
+    pub email: String,
+    pub old_password: String,
+    pub new_password: String,
+}
