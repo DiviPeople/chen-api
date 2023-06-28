@@ -5,7 +5,7 @@ use crate::{
         users::{self, ActiveModel, DeleteUser, Model, User},
     },
     jwt_auth,
-    serializers::{LoginUserSchema, Status, TokenClaims},
+    serializers::{ChangePassword, LoginUserSchema, Status, TokenClaims},
 };
 use actix_web::{
     cookie::{time::Duration as CookieDuration, Cookie},
@@ -209,6 +209,48 @@ async fn delete_user(data: web::Data<AppState>, obj: web::Json<DeleteUser>) -> i
     HttpResponse::Ok().await
 }
 
+#[post("/change_password")]
+#[has_any_role("SUPERUSER", "STAFF", "INTERN")]
+async fn change_password(
+    data: web::Data<AppState>,
+    obj: web::Json<ChangePassword>,
+) -> impl Responder {
+    let conn: &DatabaseConnection = &data.conn;
+    let user: Option<users::Model> = Users::find()
+        .filter(users::Column::Email.contains(&obj.email))
+        .one(conn)
+        .await
+        .unwrap();
+
+    let user: Model = user.unwrap();
+
+    let input_old_hash = argon2::hash_encoded(
+        obj.old_password.trim().as_bytes(),
+        user.salt.as_bytes(),
+        &ARGON2_CONFIG,
+    )
+    .unwrap();
+
+    if !user.password_hash.eq(&input_old_hash) {
+        return HttpResponse::BadRequest().json("Invalid old password");
+    }
+
+    let input_new_hash = argon2::hash_encoded(
+        obj.new_password.trim().as_bytes(),
+        user.salt.as_bytes(),
+        &ARGON2_CONFIG,
+    )
+    .unwrap();
+
+    let mut user: ActiveModel = user.into();
+
+    user.password_hash = Set(input_new_hash.to_owned());
+
+    user.update(conn).await.unwrap();
+
+    HttpResponse::Ok().finish()
+}
+
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(status)
         .service(get_users)
@@ -217,5 +259,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
         .service(delete_user)
         .service(login)
         .service(logout)
-        .service(get_me);
+        .service(get_me)
+        .service(change_password);
 }
