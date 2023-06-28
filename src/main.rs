@@ -24,10 +24,7 @@ async fn main() -> io::Result<()> {
 
     let config = AppConfig::from_env();
 
-    let db_url = format!(
-        "postgres://{}:{}@{}:{}/{}",
-        config.db_user, config.db_password, config.db_host, config.db_port, config.db_name
-    );
+    let db_url = config.database_url.to_string();
     let server_addr = format!("{}:{}", config.server_host, config.server_port);
 
     let conn = Database::connect(&db_url).await.unwrap();
